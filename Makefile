@@ -1,4 +1,4 @@
-IMAGE=links-handlers-js
+IMAGE=yallop/js-runtimes
 
 build:
 	docker build -t $(IMAGE) -f Dockerfile .
@@ -6,4 +6,4 @@ build:
 run:
 	docker run -it --rm $(IMAGE)
 
-.PHONY: links-handlers-%
+.PHONY: build run
