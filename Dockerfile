@@ -8,14 +8,17 @@ RUN mkdir /jsbin
 # Set up spidermonkey (version 60.2.3 at time of writing)
 RUN apt-get install --yes libmozjs-60-dev
 RUN echo '#!/bin/bash\n /usr/bin/js60 $@' > /jsbin/js60
+RUN chmod +x /jsbin/js60
 
 # Set up webkit (version 2.22.7 at time of writing)
 RUN apt-get install --yes libjavascriptcoregtk-4.0-bin 
 RUN echo '#!/bin/bash\n /usr/bin/jsc $@' > /jsbin/jsc
+RUN chmod +x /jsbin/jsc
 
 # Set up node
 RUN sudo apt-get install --yes nodejs
 RUN echo '#!/bin/bash\n /usr/bin/nodejs $@' > /jsbin/node
+RUN chmod +x /jsbin/node
 
 # Set up spidermonkey
 RUN mkdir /spidermonkey
