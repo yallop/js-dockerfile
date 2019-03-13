@@ -60,3 +60,17 @@ RUN echo '#!/bin/bash\n /ChakraCore/out/Release/ch $@' > /jsbin/ch
 RUN chmod +x /jsbin/ch
 
 # Set up v8 (TODO)
+## (first, install depot_tools)
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
+RUN echo 'PATH=$PATH:/depot_tools' >> /etc/bash.bashrc
+ENV PATH="${PATH}:/depot_tools"
+RUN mkdir /v8
+WORKDIR /v8
+RUN fetch v8
+WORKDIR /v8/v8
+RUN git fetch --all
+RUN git checkout -b v6.2 branch-heads/6.2
+#RUN tools/dev/v8gen.py -vv x64.release
+#RUN ninja -C out.gn/x64.release
+#RUN make_bin "/v8/v8/out.gn/x64.release/d8" "d8"
+
