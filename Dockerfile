@@ -69,8 +69,10 @@ WORKDIR /v8
 RUN fetch v8
 WORKDIR /v8/v8
 RUN git fetch --all
-RUN git checkout -b v6.2 branch-heads/6.2
-#RUN tools/dev/v8gen.py -vv x64.release
-#RUN ninja -C out.gn/x64.release
-#RUN make_bin "/v8/v8/out.gn/x64.release/d8" "d8"
+RUN git checkout 7.5.9 
+RUN tools/dev/v8gen.py -vv x64.release
+RUN ninja -C out.gn/x64.release
+RUN echo '#!/bin/bash\n /v8/v8/out.gn/x64.release/d8 $@' > /jsbin/d8
+RUN chmod +x /jsbin/d8
+
 
