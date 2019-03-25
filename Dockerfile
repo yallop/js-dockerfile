@@ -1,4 +1,4 @@
-FROM debian:sid
+FROM debian:sid as builder
 
 RUN apt-get update
 RUN apt-get install --yes wget git subversion python pkg-config clang make cmake opam libicu-dev g++ lsb-release sudo autoconf2.13
@@ -59,7 +59,7 @@ RUN ./build.sh      --no-icu
 RUN echo '#!/bin/bash\n /ChakraCore/out/Release/ch $@' > /jsbin/ch
 RUN chmod +x /jsbin/ch
 
-# Set up v8 (TODO)
+# Set up v8
 ## (first, install depot_tools)
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
 RUN echo 'PATH=$PATH:/depot_tools' >> /etc/bash.bashrc
@@ -75,4 +75,26 @@ RUN ninja -C out.gn/x64.release
 RUN echo '#!/bin/bash\n /v8/v8/out.gn/x64.release/d8 $@' > /jsbin/d8
 RUN chmod +x /jsbin/d8
 
+# Save some space
+RUN find /ChakraCore /spidermonkey -name '*.a' -o -name '*.o' | xargs rm
+WORKDIR /spidermonkey/mozjs-45.0.2/js/src/build_OPT.OBJ/js/src
+RUN rm -r gdb jsapi-tests
+
+FROM debian:sid as runner
+
+RUN apt-get update
+RUN apt-get install --yes wget git pkg-config make opam libicu-dev sudo libmozjs-60-dev libjavascriptcoregtk-4.0-bin nodejs
+
+
+RUN mkdir /spidermonkey
+COPY --from=builder /spidermonkey /spidermonkey
+
+RUN mkdir -p /ChakraCore/out
+COPY --from=builder /ChakraCore/out /ChakraCore/out
+
+RUN mkdir -p /v8/v8/out.gn/x64.release/
+COPY --from=builder /v8/v8/out.gn/x64.release/ /v8/v8/out.gn/x64.release/
+
+RUN mkdir /jsbin
+COPY --from=builder /jsbin /jsbin
 
